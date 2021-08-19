@@ -70,7 +70,7 @@ body{
     cursor: default;
     overflow: hidden;
 }
-.todoList li span{
+.todoList li span.delButton{
     background: #e74c3c;
     position: absolute;
     right: -45px;
@@ -79,8 +79,17 @@ body{
     color: #fff;
     transition: all 0.3s;
 }
-.todoList li:hover span{
+.todoList li:hover span.delButton{
     right: 0px;
+}
+.todoList li span.statusButton i{
+    margin-right: 10px;
+}
+.todoList li .complete{
+    color: #cfcfcf;
+}
+.todoList li span.complete{
+    text-decoration: line-through;
 }
 .wrapper .footer{
     display: flex;

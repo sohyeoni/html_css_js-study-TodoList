@@ -3,6 +3,7 @@ const addBtn = document.querySelector(".inputBox button");
 const todoList = document.querySelector(".todoList");
 const delAllBtn = document.querySelector(".footer button");
 
+// task 추가 버튼 활성화/비활성화
 inputBox.onkeyup = ()=>{
     let userData = inputBox.value;
     if(userData.trim() != 0) {
@@ -22,7 +23,7 @@ addBtn.onclick = ()=>{
     }else{
         listArray = JSON.parse(getLocalStorage);
     }
-    listArray.push(userData);
+    listArray.push({task: userData, status: 0});
     localStorage.setItem("New Todo", JSON.stringify(listArray));
     addBtn.classList.remove("active");
     showTasks();
@@ -36,14 +37,26 @@ function showTasks(){
         listArray = JSON.parse(getLocalStorage);
     }
     let newLiTag = '';
+    let completeCount = 0;
     listArray.forEach((element, index) => {
-        newLiTag += `<li>${element}<span onclick="delTask(${index})";><i class="fas fa-trash"></i></span></li>`;
+        let statusIconTag = '';
+        let statusdecoTag = '';
+        if(element.status == 0){
+            statusIconTag = "far fa-circle";
+        }else{
+            statusIconTag = "far fa-check-circle ";
+            statusdecoTag = "complete";
+            completeCount += 1;
+        }
+        newLiTag += `<li><span class="statusButton" onclick="statusChangeTask(${index})";><i class="${statusIconTag+statusdecoTag}"></i></span>
+            <span id="task" class="${statusdecoTag}">${element.task}</span><span class="delButton" onclick="delTask(${index})";><i class="fas fa-trash"></i></span></li>`;
     });
+
     todoList.innerHTML = newLiTag;
     inputBox.value = "";
 
     const pendingNumber = document.querySelector(".pendingNumber");
-    pendingNumber.textContent = listArray.length;
+    pendingNumber.textContent = listArray.length - completeCount;
     if(listArray.length != 0){
         delAllBtn.classList.add("active");
     }else{
@@ -55,6 +68,23 @@ function delTask(index){
     let getLocalStorage = localStorage.getItem("New Todo");
     listArray = JSON.parse(getLocalStorage);
     listArray.splice(index, 1);
+    localStorage.setItem("New Todo", JSON.stringify(listArray));
+    showTasks();
+}
+
+function statusChangeTask(index){
+    let statusBtn = document.querySelectorAll(".todoList li span.statusButton i");
+    let getLocalStorage = localStorage.getItem("New Todo");
+    listArray = JSON.parse(getLocalStorage);
+    if(listArray[index].status == 0){
+        statusBtn[index].classList.remove("fa-circle");
+        statusBtn[index].classList.add("fa-check-circle", "complete");
+        listArray[index].status = 1;
+    }else{
+        statusBtn[index].classList.remove("fa-check-circle", "complete");
+        statusBtn[index].classList.add("fa-circle");
+        listArray[index].status = 0;
+    }
     localStorage.setItem("New Todo", JSON.stringify(listArray));
     showTasks();
 }
